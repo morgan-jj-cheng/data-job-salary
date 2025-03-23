@@ -1,6 +1,10 @@
-# 💼 data-job-salary
+# Data Job Salary Dashboard (2020–2024)
 
-An interactive Shiny dashboard for exploring salary trends in data-related jobs from 2020 to 2024.
+An interactive Shiny dashboard to explore salary trends in data-related jobs across years, job categories, company countries, and experience levels.
+
+🔗 **[👉 Click here to launch the live app](https://morgan-jj-cheng.shinyapps.io/Salaries-of-Data-Related-Jobs/)**
+
+---
 
 ## 📊 Dataset Overview
 
@@ -12,66 +16,61 @@ An interactive Shiny dashboard for exploring salary trends in data-related jobs 
 ### Variables
 
 **Categorical**
-- `work_year`: Year of the job record (2020–2024)
+- `work_year`: Year of the job record
 - `experience_level`: Entry, Mid, Senior, Executive
 - `employment_type`: Part-time, Full-time, Freelance, Contract
 - `job_title`: Job title
-- `job_category`: Job category (manually classified into 10 groups)
+- `job_category`: Manually classified into 10 groups
 - `company_size`: Small, Medium, Large
-- `country_company`: Company location (converted from country code)
+- `country_company`: Converted from country code to full name
 
 **Numerical**
-- `salary_in_usd`: Salary in USD (ranging from $15,000 to $800,000)
+- `salary_in_usd`: Salary in USD ($15,000 – $800,000)
 
 ---
 
 ## 🎯 Project Purpose
 
-1. **Curiosity in the Field**  
-   As a data student, I'm interested in exploring how salaries vary by title, experience, and geography.
+1. **Understand Industry Landscape**  
+   As a student in data-related fields, I was curious about salary distributions based on job titles, experience levels, and locations.
 
-2. **Impact of Generative AI**  
-   With generative AI booming since 2022, I wanted to examine if it brought new roles or influenced salary levels.
-
----
-
-## 🔍 Analysis Goals
-
-- Salary trends vs. job category
-- Salary vs. experience level
-- Salary by country
-- Changes before and after AI became mainstream
-- Trends in job category growth
+2. **Analyze AI’s Impact**  
+   Since generative AI emerged in 2022, I wanted to see if it has led to changes in job types and salaries.
 
 ---
 
-## 🛠️ Data Preparation
+## 🔍 Key Features of the Dashboard
 
-- Checked for NA values — none found ✅
-- Transformed:
-  - `experience_level`, `company_size`: expanded and converted to factors
-  - `country_company`: converted from code to full name using `left_join`
-  - `job_category`: enriched via external source, then manually classified 337 unmatched titles
+- **Filter Panel** (Sidebar):
+  - Work year
+  - Experience level
+  - Employment type
+  - Job category
+  - Country
 
----
+- **Main Dashboard**:
+  - 📈 *Line chart*: Salary trend by year
+  - 📊 *Bar chart*: Median salary by job category
+  - 📦 *Boxplot*: Salary distribution by experience level or country
 
-## 🖥️ Shiny App Features
-
-- **Sidebar Filters**: Five dimensions (e.g., year, level, job category)
-- **Main Panel**:
-  - Top graph: Line chart for salary trends
-  - Bottom two: Bar or box plots for comparisons
-- **Table Tab**: Displays raw dataset
-- **Submit Button**: To apply filters and update graphs
-- *(Planned)*: Let users choose number of data entries shown
+- **Submit Button**: Click to apply selected filters and update charts  
+- **Data Table Tab**: View and search the filtered raw data
 
 ---
 
-## 📦 How to Run
+## 🛠️ Data Processing
+
+- Verified no `NA` values in dataset
+- Converted short codes (e.g., country code, company size) to full names
+- Enriched job titles with categories using external references + manual classification for 337 unmatched entries
+
+---
+
+## 🚀 Run Locally
 
 ```r
-# Clone this repo
+# Clone the repo
 git clone https://github.com/morgan-jj-cheng/data-job-salary.git
 
-# In R
+# Run the app
 shiny::runApp("path_to_app")
