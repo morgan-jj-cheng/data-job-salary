@@ -1,0 +1,318 @@
+---
+title: "Salaries of data related jobs from 2020 - 2024"
+author: "Morgan"
+output: html_document
+date: "2025-02-04"
+---
+
+## Import Package
+```{r, message=F, warning=F}
+library(tidyverse)
+library(dplyr)
+library(psych)
+library(stringr)
+library(ggplot2)
+```
+
+---
+
+## Read csv
+```{r}
+# read
+df <- read.csv("data/DataScience_salaries_2024.csv")
+#head(df, 5)
+
+# data type
+str(df)
+
+# simple stats
+describe(df)
+
+# na value
+colSums(is.na(df))  #no na values in each columns
+```
+---
+
+## Data Description
+### Categorical
+- **work_year**: the year of the data (2020 - 2024)
+- **experience_level**: EN(entry), MI(mid), SE(senior), EX(executive)
+- **employment_type**: PT(part-time), FT(full-time), FL(freelance), CT(contract)
+- **job_title**: the title of the job
+- **salary_currency**: the currency in which the salary is denoted
+- **employee_residence**: the residence location of employee
+- **company_location**: the location of the company
+- **company_size**: S(small), M(medium), L(large)
+
+### Numerical
+- **salary**: the salary of the employee (14000 - 30400000)
+- **salary_in_usd**: salary converted to USD (15000 - 800000)
+- **remote_ratio**: the ratio of remote work allowed (0 - 100)
+
+---
+
+## Modification
+### M1: map all abbreviations to full forms
+```{r}
+df <- df %>%
+  mutate(
+    experience_level = recode(experience_level,
+                              "EN" = "Entry", 
+                              "MI" = "Mid",
+                              "SE" = "Senior", 
+                              "EX" = "Executive"
+    ),
+    
+    company_size = recode(company_size, 
+                          "S" = "Small", 
+                          "M" = "Medium", 
+                          "L" = "Large"
+    ),
+    
+    employment_type = recode(employment_type, 
+                             "PT" = "Part-time", 
+                             "FT" = "Full-time", 
+                             "FL" = "Freelance", 
+                             "CT" = "Contract"
+    )
+  )
+```
+
+### M2: map all country codes to full names
+```{r}
+# map country full names
+countrycode <- read.csv("data/countrycode.csv")
+#head(countrycode)
+
+# inner join
+df <- df %>%
+  left_join(countrycode, by = c("employee_residence"="code")) %>%
+  left_join(countrycode, by = c("company_location"="code")) %>%
+  rename(
+    country_employee = country.x,   #new = old
+    country_company = country.y
+  ) %>%
+  select(-employee_residence, -company_location)
+#head(df, 5)
+```
+
+
+### M3: get job category
+```{r}
+# read data
+job_cat <- read.csv("data/jobtitle_vs_category.csv")
+
+
+# get unique value
+unique_title_vs_category <- job_cat %>%
+  distinct(job_title, job_category) %>%   #drop duplicates
+  arrange(job_title)
+
+head(unique_title_vs_category, 5)
+
+
+# left join by job_title
+df <- df %>%
+  left_join(unique_title_vs_category, by="job_title")
+```
+
+```{r}
+# check na: 337 cols
+colSums(is.na(df))
+
+# check unique values of category
+unique_title_vs_category %>%
+  distinct(job_category)   # 10 different categories
+
+
+# manually map "job_title" to "job_category"
+df <- df %>%
+  mutate(
+    job_category = case_when(
+      is.na(job_category) & str_detect(job_title, "AI|ML") ~ "Machine Learning and AI",
+      is.na(job_category) & str_detect(job_title, "Data Analyst|Analytics") ~ "Data Analysis",
+      is.na(job_category) & str_detect(job_title, "Business Intelligence|Data Reporting") ~ "BI and Visualization",
+      is.na(job_category) & str_detect(job_title, "Prompt Engineer") ~ "Prompt Engineer",
+      is.na(job_category) & str_detect(job_title, "Data Management|Principal") ~ "Data Management and Strategy",
+      is.na(job_category) & str_detect(job_title, "Data Science|Research|Scientist") ~ "Data Science and Research",
+      is.na(job_category) & str_detect(job_title, "Quality|Operations") ~ "Data Quality and Operations",
+      is.na(job_category) & str_detect(job_title, "Pipeline|Robotics|Developer") ~ "Data Engineering",
+      is.na(job_category) ~ "Computational Biologist",   # only one
+      TRUE ~ job_category
+    )
+  )
+```
+
+### get 
+```{r}
+# unify country name
+library(maps)
+library(countrycode)
+
+middle_east <- c("Saudi Arabia", "United Arab Emirates", "Iran", "Iraq", "Israel", "Turkey", "Egypt", "Qatar", "Kuwait")
+
+df <- df %>%
+  mutate(country_company = countrycode(country_company, origin = "country.name", destination = "country.name")) %>%
+  mutate(continent = countrycode(country_company, origin = "country.name", destination = "continent"))
+
+head(df, 5)
+```
+
+
+```{r}
+# final adjustment
+df <- df %>%
+  select("work_year", "experience_level", "employment_type", "job_category", 
+         "job_title", "salary_in_usd", "company_size", "continent", 
+         "country_company") %>%
+  rename("year" = "work_year",
+         "company_country" = "country_company", 
+         "job_type" = "employment_type", 
+         "salary_usd" = "salary_in_usd")
+
+# save as RData
+#save(df, file = "data/data_jobs_salary.RData")
+```
+
+
+```{r}
+# test
+load("data/data_jobs_salary.RData")
+head(df, 109)
+
+
+# basic info
+summary(df)
+describe(df)
+str(df)
+
+
+# simple stats of num cols
+df %>%
+  select("salary_usd") %>%
+  describe() %>%
+  t() %>%
+  as.data.frame()
+```
+
+
+---
+
+## Plot
+```{r}
+# Salary in USD vs. Job Category (mid level)
+df %>%
+  filter(experience_level == "Mid") %>%
+  ggplot(aes(x=salary_usd, y=job_category)) + 
+  geom_boxplot() + 
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Salary in USD vs. Job Category (mid level)",
+    x = "Salary (in USD)",
+    y = "Job Category"
+  ) + 
+  theme_minimal()
+```
+
+
+```{r}
+# Salary in USD vs. Work Year
+df %>%
+  filter(job_title == "Data Analyst") %>%
+  ggplot(aes(x=year, y=salary_usd, fill=experience_level)) + 
+  geom_boxplot() + 
+  scale_y_continuous(labels = scales::comma) + 
+  coord_cartesian(ylim=c(0, 300000)) + 
+  labs(
+    title = "Data Analyst Salary Trends by Experience Level", 
+    x = "Year", 
+    y = "Salary in USD"
+  )
+```
+
+
+```{r}
+# Median salary in usd vs. Country
+df %>%
+  group_by(company_country) %>%
+  summarize(median_country = median(salary_usd)) %>%
+  arrange(desc(median_country)) %>% 
+  slice_head(n = 15) %>%
+  ggplot(aes(x=median_country, y=reorder(company_country, median_country), fill = median_country)) + 
+  geom_col() + 
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Top 15 Countries by Median Salary in USD",
+    x = "Median Salary (in USD)",
+    y = "Country"
+  ) +
+  theme_minimal()
+```
+
+
+```{r}
+# Trend of Job Category
+g <- df %>%
+  group_by(year, job_category) %>%
+  #count(job_category, name="job_count")  %>%
+  summarise(job_count = n(), name="job_count") %>% 
+  ggplot(aes(x=year, y=job_count, color=job_category)) + 
+  geom_line() + 
+  geom_point() +
+  scale_y_log10() +
+  labs(
+    title = "Trend of Job Category",
+    x = "Year",
+    y = "Number of Job Categories"
+  ) +
+  theme_minimal()
+
+ggplotly(g)
+```
+
+
+
+```{r}
+library(maps)
+library(countrycode)
+library(viridis)
+library(scales)
+
+
+world_map <- map_data("world")
+
+# calculate median
+df_map <- df %>%
+  group_by(company_country) %>%
+  summarise(median_salary = median(salary_usd, na.rm = TRUE)) %>%   #drop NA
+  arrange(desc(median_salary))
+
+# unify convert country name in world_map
+world_map$region <- countrycode(world_map$region, origin = "country.name", destination = "country.name")
+# join location data and salary data
+df_map_salary <- left_join(world_map, df_map, by = c("region" = "company_country"))
+
+
+# plot
+p <- ggplot() +
+  geom_polygon(data = df_map_salary,
+               aes(x = long, y = lat,
+                   group = group, fill = median_salary, 
+                   text = paste(region, "\nAvg Salary: $", round(median_salary, 2))
+               ), 
+               color = "white", size = 0.2) +
+  scale_fill_viridis_c(option = "magma", na.value = "gray90", labels = comma) +  
+  theme_minimal() +
+  theme(
+    legend.key.size = unit(0.4, "cm"),  
+    legend.text = element_text(size = 8),  
+    legend.title = element_text(size = 9, face = "bold"), 
+    axis.title.x = element_blank(), 
+    axis.title.y = element_blank()
+  ) +
+  labs(title = "Median Salary Distribution (in USD)", fill = "USD")
+
+
+ggplotly(p, tooltip = "text", dynamicTicks = TRUE)
+```
+
