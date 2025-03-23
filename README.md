@@ -1,4 +1,4 @@
-# Title: Data Job Salary Dashboard (2020–2024)
+# Data Job Salary Dashboard (2020–2024)
 
 An interactive dashboard to explore salary trends in data-related jobs across years, job categories, company countries, and experience levels.
 
@@ -6,7 +6,7 @@ An interactive dashboard to explore salary trends in data-related jobs across ye
 
 ---
 
-## Dataset Overview
+## 📊 Dataset Overview
 
 - **Name**: Salaries of Data-Related Jobs (2020–2024)  
 - **Source**: [Kaggle – Latest Data Science Job Salaries 2020 - 2024](https://www.kaggle.com/)  
