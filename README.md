@@ -1,12 +1,12 @@
-# Data Job Salary Dashboard (2020–2024)
+# Title: Data Job Salary Dashboard (2020–2024)
 
-An interactive Shiny dashboard to explore salary trends in data-related jobs across years, job categories, company countries, and experience levels.
+An interactive dashboard to explore salary trends in data-related jobs across years, job categories, company countries, and experience levels.
 
 🔗 **[👉 Click here to launch the live app](https://morgan-jj-cheng.shinyapps.io/Salaries-of-Data-Related-Jobs/)**
 
 ---
 
-## 📊 Dataset Overview
+## Dataset Overview
 
 - **Name**: Salaries of Data-Related Jobs (2020–2024)  
 - **Source**: [Kaggle – Latest Data Science Job Salaries 2020 - 2024](https://www.kaggle.com/)  
@@ -29,16 +29,6 @@ An interactive Shiny dashboard to explore salary trends in data-related jobs acr
 
 ---
 
-## 🎯 Project Purpose
-
-1. **Understand Industry Landscape**  
-   As a student in data-related fields, I was curious about salary distributions based on job titles, experience levels, and locations.
-
-2. **Analyze AI’s Impact**  
-   Since generative AI emerged in 2022, I wanted to see if it has led to changes in job types and salaries.
-
----
-
 ## 🔍 Key Features of the Dashboard
 
 - **Filter Panel** (Sidebar):
@@ -49,12 +39,11 @@ An interactive Shiny dashboard to explore salary trends in data-related jobs acr
   - Country
 
 - **Main Dashboard**:
-  - 📈 *Line chart*: Salary trend by year
-  - 📊 *Bar chart*: Median salary by job category
-  - 📦 *Boxplot*: Salary distribution by experience level or country
-
-- **Submit Button**: Click to apply selected filters and update charts  
-- **Data Table Tab**: View and search the filtered raw data
+  - *Distribution chart*: Salary distribution by experience level
+  - *Boxplot*: Salary distribution by experience level and job title
+  - *World map*: Median salary by year and country
+  - *Line chart*: Salary trend by year
+  - *Data Table*: View and customize filtering with raw data
 
 ---
 
