@@ -2,7 +2,7 @@
 
 An interactive dashboard to explore salary trends in data-related jobs across years, job categories, company countries, and experience levels.
 
-🔗 **[Click here to view the app](https://morgan-jj-cheng.shinyapps.io/Salaries-of-Data-Related-Jobs/)**
+🔗 **[Try the App](https://morgan-jj-cheng.shinyapps.io/Salaries-of-Data-Related-Jobs/)**
 
 ---
 
