@@ -150,7 +150,7 @@ ui <- dashboardPage(
                div(style = "margin-top: 20px;"),
                
                # world map
-               plotlyOutput("plt3", height = "550px"),
+               plotlyOutput("plt3", height = "auto"),
                div(style = "margin-top: 30px;"),
                
                # year vs $ line chart
@@ -502,36 +502,41 @@ server <- function(input, output){
   output$table_2020 <- DT::renderDataTable({
     final_data() %>% 
       filter(year == 2020) %>% 
+      select(-year) %>%
       arrange(desc(median_salary)) %>%
-      datatable(options = list(dom = 't'))
+      datatable(options = list(dom = 't'), rownames = FALSE)
   })
   
   output$table_2021 <- DT::renderDataTable({
     final_data() %>% 
       filter(year == 2021) %>%
+      select(-year) %>%
       arrange(desc(median_salary)) %>%
-      datatable(options = list(dom = 't'))
+      datatable(options = list(dom = 't'), rownames = FALSE)
   })
   
   output$table_2022 <- DT::renderDataTable({
     final_data() %>% 
       filter(year == 2022) %>% 
+      select(-year) %>%
       arrange(desc(median_salary)) %>%
-      datatable(options = list(dom = 't'))
+      datatable(options = list(dom = 't'), rownames = FALSE)
   })
   
   output$table_2023 <- DT::renderDataTable({
     final_data() %>% 
       filter(year == 2023) %>% 
+      select(-year) %>%
       arrange(desc(median_salary)) %>%
-      datatable(options = list(dom = 't'))
+      datatable(options = list(dom = 't'), rownames = FALSE)
   })
   
   output$table_2024 <- DT::renderDataTable({
     final_data() %>% 
       filter(year == 2024) %>% 
+      select(-year) %>%
       arrange(desc(median_salary)) %>%
-      datatable(options = list(dom = 't'))
+      datatable(options = list(dom = 't'), rownames = FALSE)
   })
   
   
